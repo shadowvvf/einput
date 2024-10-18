@@ -1,8 +1,76 @@
 import prompt_toolkit
 from prompt_toolkit.validation import Validator, ValidationError
 import re
+from threading import Thread
 
-def einput(prompt="> ", regex=False, req_regex=".*", autocomplete=False, autocomplete_list=None, error_color="red", success_color="green", error_message=None, regex_move_cursor_to_end=False, raise_error_if_empty=True, style_dict=None):
+class einputthread:
+
+    def __init__(self, prompt="> ", regex=False, req_regex=".*", autocomplete=False, autocomplete_list=None, error_color="red", success_color="green", error_message=None, regex_move_cursor_to_end=False, raise_error_if_empty=True, style_dict=None,
+           is_password=False, timeout=None):
+
+        self.prompt = prompt
+        self.regex = regex
+        self.req_regex = req_regex
+        self.autocomplete = autocomplete
+        self.autocomplete_list = autocomplete_list
+        self.error_color = error_color
+        self.success_color = success_color
+        self.error_message = error_message
+        self.regex_move_cursor_to_end = regex_move_cursor_to_end
+        self.raise_error_if_empty = raise_error_if_empty
+        self.style_dict = style_dict
+        self.is_password = is_password
+        self.timeout = timeout
+
+
+        t = Thread(target=self.run)
+        t.daemon = True
+        t.start()
+        t.join(timeout=timeout)
+
+
+    def run(self):
+        self.result = einput(
+            prompt=self.prompt,
+            regex=self.regex,
+            req_regex=self.req_regex,
+            autocomplete=self.autocomplete,
+            autocomplete_list=self.autocomplete_list,
+            error_color=self.error_color,
+            success_color=self.success_color,
+            error_message=self.error_message,
+            regex_move_cursor_to_end=self.regex_move_cursor_to_end,
+            raise_error_if_empty=self.raise_error_if_empty,
+            style_dict=self.style_dict,
+            is_password=self.is_password,
+            timeout=None
+        )
+
+    def get_result(self):
+        return self.result
+
+def einput(prompt="> ", regex=False, req_regex=".*", autocomplete=False, autocomplete_list=None, error_color="red", success_color="green", error_message=None, regex_move_cursor_to_end=False, raise_error_if_empty=True, style_dict=None,
+           is_password=False, timeout=None):
+    """
+    `prompt` - The prompt message displayed to the user.\n
+    `regex` - Boolean indicating whether to use regular expression validation.\n
+    `req_regex` - The regular expression pattern to validate input against.\n
+    `autocomplete` - Boolean indicating whether to enable autocomplete.\n
+    `autocomplete_list` - A list of suggestions for autocompletion as the user types.\n
+    `error_color` - The color of the error message.\n
+    `success_color` - The color of the success message.\n
+    `error_message` - The error message to display if validation fails.\n
+    `regex_move_cursor_to_end` - Boolean indicating whether to move the cursor to the end on regex validation failure.\n
+    `raise_error_if_empty` - Boolean indicating whether to raise an error if input is empty.\n
+    `style_dict` - Dictionary defining custom styles for the prompt interface.\n
+    `is_password` - Boolean indicating whether to mask input with asterisks.\n
+    `timeout` - The number of seconds to wait before timing out. (None means no timeout, means infinite timeout) (if users not input anything then it will be None)\n
+    """
+
+    if timeout != None:
+        z = einputthread(prompt, regex, req_regex, autocomplete, autocomplete_list, error_color, success_color, error_message, regex_move_cursor_to_end, raise_error_if_empty, style_dict, is_password, timeout)
+        return z.get_result()
+
     validator = None
     if regex:
         if req_regex == None:
@@ -36,7 +104,8 @@ def einput(prompt="> ", regex=False, req_regex=".*", autocomplete=False, autocom
             prompt,
             completer=completer,
             validator=validator,
-            style=style
+            style=style,
+            is_password=is_password
         )
     except Exception as e:
         if raise_error_if_empty:

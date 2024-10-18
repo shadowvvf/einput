@@ -12,7 +12,9 @@ def main():
         regex_move_cursor_to_end=True,
         raise_error_if_empty=True,
         autocomplete=True,
-        autocomplete_list=autocompletelist
+        autocomplete_list=autocompletelist,
+        is_password=False,
+        timeout=1
     )
 
     print(text)
