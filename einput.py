@@ -40,7 +40,7 @@ def einput(prompt="> ", regex=False, req_regex=".*", autocomplete=False, autocom
         )
     except Exception as e:
         if raise_error_if_empty:
-            raise Exception("Error in einput(): " + str(e))
+            raise Exception("Error in einput (if you dont want to see this error then set raise_error_if_empty to False): " + str(e))
         else:
             return None
 
