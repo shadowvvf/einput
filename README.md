@@ -34,6 +34,8 @@ See in examples.
 - `regex_move_cursor_to_end`: Boolean indicating whether to move the cursor to the end on regex validation failure.
 - `raise_error_if_empty`: Boolean indicating whether to raise an error if input is empty.
 - `style_dict`: Dictionary defining custom styles for the prompt interface.
+- `is_password`: Masks text with *
+- `timeout`: The number of seconds to wait before timing out. (None means no timeout, means infinite timeout) (if users not input anything then it will be None)
 
 ### Example
 
