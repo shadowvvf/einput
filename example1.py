@@ -1,9 +1,9 @@
-import einput
+from einput import einput
 
 
 def main():
     autocompletelist = ["hi", "123", "hello", "world"]
-    text = einput.einput(
+    text = einput(
         prompt="> ",
         regex=True,
         req_regex="^[0-9]*$", # only numbers
@@ -13,8 +13,7 @@ def main():
         raise_error_if_empty=True,
         autocomplete=True,
         autocomplete_list=autocompletelist,
-        is_password=False,
-        timeout=1
+        is_password=False
     )
 
     print(text)
