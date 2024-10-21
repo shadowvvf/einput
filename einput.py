@@ -6,7 +6,7 @@ from threading import Thread
 class einputthread:
 
     def __init__(self, prompt="> ", regex=False, req_regex=".*", autocomplete=False, autocomplete_list=None, error_color="red", success_color="green", error_message=None, regex_move_cursor_to_end=False, raise_error_if_empty=True, style_dict=None,
-           is_password=False, timeout=None):
+           is_password=False, timeout=None, multiple_lines=False, multiple_lines_limit=10):
 
         self.prompt = prompt
         self.regex = regex
@@ -21,6 +21,9 @@ class einputthread:
         self.style_dict = style_dict
         self.is_password = is_password
         self.timeout = timeout
+        self.multiple_lines = multiple_lines
+        self.multiple_lines_limit = multiple_lines_limit
+        
 
 
         t = Thread(target=self.run)
@@ -43,14 +46,16 @@ class einputthread:
             raise_error_if_empty=self.raise_error_if_empty,
             style_dict=self.style_dict,
             is_password=self.is_password,
-            timeout=None
+            timeout=None,
+            multiple_lines=self.multiple_lines,
+            multiple_lines_limit=self.multiple_lines_limit
         )
 
     def get_result(self):
         return self.result
 
 def einput(prompt="> ", regex=False, req_regex=".*", autocomplete=False, autocomplete_list=None, error_color="red", success_color="green", error_message=None, regex_move_cursor_to_end=False, raise_error_if_empty=True, style_dict=None,
-           is_password=False, timeout=None):
+           is_password=False, timeout=None, multiple_lines=False, multiple_lines_limit=10, multiple_lines_array=False):
     """
     `prompt` - The prompt message displayed to the user.\n
     `regex` - Boolean indicating whether to use regular expression validation.\n
@@ -65,6 +70,9 @@ def einput(prompt="> ", regex=False, req_regex=".*", autocomplete=False, autocom
     `style_dict` - Dictionary defining custom styles for the prompt interface.\n
     `is_password` - Boolean indicating whether to mask input with asterisks.\n
     `timeout` - The number of seconds to wait before timing out. (None means no timeout, means infinite timeout) (if users not input anything then it will be None)\n
+    `multiple_lines` - Boolean indicating whether to use multiple lines for input.\n
+    `multiple_lines_limit` - The maximum number of lines to allow for input.\n
+    `multiple_lines_array` - Boolean indicating whether to use array for multiple lines for input.
     """
 
     if timeout != None:
@@ -100,13 +108,31 @@ def einput(prompt="> ", regex=False, req_regex=".*", autocomplete=False, autocom
     session = prompt_toolkit.PromptSession()
 
     try:
-        u_input = session.prompt(
-            prompt,
-            completer=completer,
-            validator=validator,
-            style=style,
-            is_password=is_password
-        )
+        if multiple_lines:
+            lines = []
+            for i in range(multiple_lines_limit):
+                u_input = session.prompt(
+                    prompt,
+                    completer=completer,
+                    validator=validator,
+                    style=style,
+                    is_password=is_password
+                )
+                lines.append(u_input)
+                if u_input == "":
+                    break
+            if multiple_lines_array:
+                u_input = lines
+            else:
+                u_input = "\n".join(lines)
+        else:
+            u_input = session.prompt(
+                prompt,
+                completer=completer,
+                validator=validator,
+                style=style,
+                is_password=is_password
+            )
     except Exception as e:
         if raise_error_if_empty:
             raise Exception("Error in einput (if you dont want to see this error then set raise_error_if_empty to False): " + str(e))

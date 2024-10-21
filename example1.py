@@ -13,7 +13,10 @@ def main():
         raise_error_if_empty=True,
         autocomplete=True,
         autocomplete_list=autocompletelist,
-        is_password=False
+        is_password=False,
+        multiple_lines=True,
+        multiple_lines_limit=5,
+        multiple_lines_array=False
     )
 
     print(text)
