@@ -36,6 +36,9 @@ See in examples.
 - `style_dict`: Dictionary defining custom styles for the prompt interface.
 - `is_password`: Masks text with *
 - `timeout`: The number of seconds to wait before timing out. (None means no timeout, means infinite timeout) (if users not input anything then it will be None)
+- `multiple_lines`: Boolean indicating whether to allow multiple lines of input.
+- `multiple_lines_limit`: Integer specifying the maximum number of lines allowed when `multiple_lines` is True.
+- `multiple_lines_array`: Boolean indicating whether to return the input as an array of lines when `multiple_lines` is True.
 
 ### Example
 
