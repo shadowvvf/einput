@@ -26,10 +26,11 @@ class einputthread:
         
 
 
-        t = Thread(target=self.run)
-        t.daemon = True
-        t.start()
-        t.join(timeout=timeout)
+        self.t = Thread(target=self.run)
+        self.t.daemon = True
+        self.t.start()
+        if timeout != None: self.t.join(timeout=timeout)
+        else: self.t.join()
 
 
     def run(self):
@@ -50,6 +51,9 @@ class einputthread:
             multiple_lines=self.multiple_lines,
             multiple_lines_limit=self.multiple_lines_limit
         )
+    
+    def stop(self):
+        pass
 
     def get_result(self):
         return self.result
