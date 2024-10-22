@@ -39,6 +39,7 @@ See in examples.
 - `multiple_lines`: Boolean indicating whether to allow multiple lines of input.
 - `multiple_lines_limit`: Integer specifying the maximum number of lines allowed when `multiple_lines` is True.
 - `multiple_lines_array`: Boolean indicating whether to return the input as an array of lines when `multiple_lines` is True.
+- `stop_flag`: Boolean indicating whether to stop the input loop.
 
 ### Example
 
