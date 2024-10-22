@@ -24,7 +24,7 @@ class einputthread:
         self.multiple_lines = multiple_lines
         self.multiple_lines_limit = multiple_lines_limit
         
-
+        self.stop_flag = False
 
         self.t = Thread(target=self.run)
         self.t.daemon = True
@@ -49,17 +49,18 @@ class einputthread:
             is_password=self.is_password,
             timeout=None,
             multiple_lines=self.multiple_lines,
-            multiple_lines_limit=self.multiple_lines_limit
+            multiple_lines_limit=self.multiple_lines_limit,
+            stop_flag=self.stop_flag
         )
     
     def stop(self):
-        pass
+        self.stop_flag = True
 
     def get_result(self):
         return self.result
 
 def einput(prompt="> ", regex=False, req_regex=".*", autocomplete=False, autocomplete_list=None, error_color="red", success_color="green", error_message=None, regex_move_cursor_to_end=False, raise_error_if_empty=True, style_dict=None,
-           is_password=False, timeout=None, multiple_lines=False, multiple_lines_limit=10, multiple_lines_array=False):
+           is_password=False, timeout=None, multiple_lines=False, multiple_lines_limit=10, multiple_lines_array=False, stop_flag=False):
     """
     `prompt` - The prompt message displayed to the user.\n
     `regex` - Boolean indicating whether to use regular expression validation.\n
@@ -76,7 +77,9 @@ def einput(prompt="> ", regex=False, req_regex=".*", autocomplete=False, autocom
     `timeout` - The number of seconds to wait before timing out. (None means no timeout, means infinite timeout) (if users not input anything then it will be None)\n
     `multiple_lines` - Boolean indicating whether to use multiple lines for input.\n
     `multiple_lines_limit` - The maximum number of lines to allow for input.\n
-    `multiple_lines_array` - Boolean indicating whether to use array for multiple lines for input.
+    `multiple_lines_array` - Boolean indicating whether to use array for multiple lines for input.\n
+    `stop_flag` - Boolean indicating whether to stop the input thread.\n
+    
     """
 
     if timeout != None:
@@ -115,6 +118,7 @@ def einput(prompt="> ", regex=False, req_regex=".*", autocomplete=False, autocom
         if multiple_lines:
             lines = []
             for i in range(multiple_lines_limit):
+                if stop_flag: return None
                 u_input = session.prompt(
                     prompt,
                     completer=completer,
@@ -130,6 +134,7 @@ def einput(prompt="> ", regex=False, req_regex=".*", autocomplete=False, autocom
             else:
                 u_input = "\n".join(lines)
         else:
+            if stop_flag: return None
             u_input = session.prompt(
                 prompt,
                 completer=completer,
