@@ -1,12 +1,13 @@
 import prompt_toolkit
 from prompt_toolkit.validation import Validator, ValidationError
+from prompt_toolkit.history import FileHistory
 import re
 from threading import Thread
 
 class einputthread:
 
     def __init__(self, prompt="> ", regex=False, req_regex=".*", autocomplete=False, autocomplete_list=None, error_color="red", success_color="green", error_message=None, regex_move_cursor_to_end=False, raise_error_if_empty=True, style_dict=None,
-           is_password=False, timeout=None, multiple_lines=False, multiple_lines_limit=10):
+           is_password=False, timeout=None, multiple_lines=False, multiple_lines_limit=10, history=False, history_filename=None):
 
         self.prompt = prompt
         self.regex = regex
@@ -23,6 +24,8 @@ class einputthread:
         self.timeout = timeout
         self.multiple_lines = multiple_lines
         self.multiple_lines_limit = multiple_lines_limit
+        self.history = history
+        self.history_filename = history_filename
         
         self.stop_flag = False
 
@@ -50,7 +53,9 @@ class einputthread:
             timeout=None,
             multiple_lines=self.multiple_lines,
             multiple_lines_limit=self.multiple_lines_limit,
-            stop_flag=self.stop_flag
+            stop_flag=self.stop_flag,
+            history=self.history,
+            history_filename=self.history_filename
         )
     
     def stop(self):
@@ -60,7 +65,8 @@ class einputthread:
         return self.result
 
 def einput(prompt="> ", regex=False, req_regex=".*", autocomplete=False, autocomplete_list=None, error_color="red", success_color="green", error_message=None, regex_move_cursor_to_end=False, raise_error_if_empty=True, style_dict=None,
-           is_password=False, timeout=None, multiple_lines=False, multiple_lines_limit=10, multiple_lines_array=False, stop_flag=False):
+           is_password=False, timeout=None, multiple_lines=False, multiple_lines_limit=10, multiple_lines_array=False, stop_flag=False, 
+           history = False, history_filename=None):
     """
     `prompt` - The prompt message displayed to the user.\n
     `regex` - Boolean indicating whether to use regular expression validation.\n
@@ -79,8 +85,11 @@ def einput(prompt="> ", regex=False, req_regex=".*", autocomplete=False, autocom
     `multiple_lines_limit` - The maximum number of lines to allow for input.\n
     `multiple_lines_array` - Boolean indicating whether to use array for multiple lines for input.\n
     `stop_flag` - Boolean indicating whether to stop the input thread.\n
-    
+    `history` - Boolean indicating whether to enable history.\n
+    `history_filename` - The filename of the history file.
     """
+
+    if history != False and history_filename == None: raise Exception("history_filename cannot be None if history is True")
 
     if timeout != None:
         z = einputthread(prompt, regex, req_regex, autocomplete, autocomplete_list, error_color, success_color, error_message, regex_move_cursor_to_end, raise_error_if_empty, style_dict, is_password, timeout)
@@ -112,7 +121,8 @@ def einput(prompt="> ", regex=False, req_regex=".*", autocomplete=False, autocom
     
     style = prompt_toolkit.styles.Style.from_dict(style_dict)
 
-    session = prompt_toolkit.PromptSession()
+    if history: session = prompt_toolkit.PromptSession(history=FileHistory(history_filename))
+    else: session = prompt_toolkit.PromptSession()
 
     try:
         if multiple_lines:

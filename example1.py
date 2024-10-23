@@ -16,7 +16,9 @@ def main():
         is_password=False,
         multiple_lines=True,
         multiple_lines_limit=5,
-        multiple_lines_array=False
+        multiple_lines_array=False,
+        history=True,
+        history_filename="history.txt"
     )
 
     print(text)
